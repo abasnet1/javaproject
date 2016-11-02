@@ -6,7 +6,6 @@ public class coincide_multichannel {
 
 	public static void main (String[] args) throws InterruptedException {
 		RegisterInterface reg = new RegisterInterface();
-		//init();
 		while(true){
 			poll(reg);
 			Thread.sleep(100);
