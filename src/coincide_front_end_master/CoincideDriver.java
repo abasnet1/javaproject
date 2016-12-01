@@ -5,11 +5,15 @@ import java.util.Scanner;
 public class CoincideDriver {
 	public static void main(String[] args) {
 		String portName = args[0];
-		String greet = "Welcome to Coincide 0.1 Alpha.";
+		String greet = "Welcome to Coincide 0.1 Alpha. Please enter initial parameters.";
+		String s0 = "Please enter the number of data points you would like to collect: ";
+		String s1 = "Thank you for using Coincide. Goodbye.";
+		String s2 = "Invalid selection.";
 		PollObj mojo = new PollObj(portName);
 		Scanner scan = new Scanner(System.in);
 		boolean menuLoop = true;
 		int menuSelection = 0;
+		int dataPoints = 0;
 		int[] requiredParams = new int[3]; // 0: first window 1: second window 2: integration interval
 		System.out.println(greet);
 		setWindowWidths(scan, mojo, requiredParams);
@@ -18,7 +22,23 @@ public class CoincideDriver {
 			menuPrint();
 			menuSelection = Integer.parseInt(scan.nextLine());
 			switch(menuSelection) { // finish this
-				
+				case 1: System.out.println(s0);
+				   		dataPoints = Integer.parseInt(scan.nextLine());
+				   		for(int i = 0; i < dataPoints; i++)
+				   			outputData(collectData(mojo, requiredParams[3]));
+				   		break;
+				case 2: setWindowWidths(scan, mojo, requiredParams);
+						break;
+				case 3: setInterval(scan, requiredParams);
+						break;
+				case 4: getCurrentParams(requiredParams);
+						break;
+				case 5: menuLoop = false;
+						System.out.println(s1);
+						break;
+				default: 
+						System.out.print(s2);
+						break;
 			}
 			
 		}
@@ -28,8 +48,8 @@ public class CoincideDriver {
 	private static void setWindowWidths(Scanner sc, PollObj p, int[] up) {
 		String s0 = "Coincidence window width is p(2n - 1), where p is the period of the FPGA clock,";
 		String s1 = "and n is the replicated pulse length in clock cycles.";
-		String s2 = "Please enter the desired pulse length for observation window 1: (min 2, max 15)";
-		String s3 = "Please enter the desired pulse length for observation window 2: (min 2, max 15)";
+		String s2 = "Please enter the desired n for observation window 1 (min 2, max 15): ";
+		String s3 = "Please enter the desired n for observation window 2 (min 2, max 15): ";
 		System.out.println(s0);
 		System.out.println(s1);
 		System.out.print(s2);
@@ -49,7 +69,7 @@ public class CoincideDriver {
 		up[2] = Integer.parseInt(sc.nextLine());
 	}
 	
-	private void getCurrentParams(int[] up) {
+	private static void getCurrentParams(int[] up) {
 		String s0 = "Pulse length for observation window 1: ";
 		String s1 = "Pulse length for observation window 2: ";
 		String s2 = "Integration interval (tenths of a second): ";
@@ -58,7 +78,7 @@ public class CoincideDriver {
 		System.out.println(s2 + up[2]);
 	}
 	
-	private int[] collectData(PollObj p, int interval) {
+	private static int[] collectData(PollObj p, int interval) {
 		int i = 0;
 		int[] tmp = new int[30];
 		while(i < interval) {
@@ -79,10 +99,11 @@ public class CoincideDriver {
 		return tmp;
 	}
 	
-	private void outputData(int[] d, int interval) { // finish this
+	private static void outputData(int[] d) { 
 		System.out.println("/tWindow 1/t/t/tWindow 2");
 		System.out.println("/t--------/t/t/t--------");
-		
+		for(int i = 0; i < d.length/2; i++)
+			System.out.println("/t" + d[i] + "/t/t/t" + d[i + (d.length/2)]);		
 	}
 	
 	private static void menuPrint() {
