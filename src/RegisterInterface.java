@@ -99,7 +99,7 @@ public class RegisterInterface {
 		buff[4] = (byte) ((address >> 24) & 0xff);
 		if (!serialPort.writeBytes(buff))
 			throw new SerialPortException(serialPort.getPortName(), "readReg", "Failed to write address");
-		buff = serialPort.readBytes(4, 1000);
+		buff = serialPort.readBytes(4, 5);
 		return (buff[0] & 0xff) | (buff[1] & 0xff) << 8 | (buff[2] & 0xff) << 16 | (buff[3] & 0xff) << 24;
 	}
 
@@ -125,7 +125,7 @@ public class RegisterInterface {
 		if (!serialPort.writeBytes(buff))
 			throw new SerialPortException(serialPort.getPortName(), "readReg", "Failed to write address");
 
-		buff = serialPort.readBytes(length * 4, 3000);
+		buff = serialPort.readBytes(length * 4, 15);
 
 		for (int i = 0; i < buff.length; i += 4) {
 			data[i / 4 + start] = (buff[i] & 0xff) | (buff[i + 1] & 0xff) << 8 | (buff[i + 2] & 0xff) << 16 | (buff[i + 3] & 0xff) << 24;

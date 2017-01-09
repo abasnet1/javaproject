@@ -7,7 +7,7 @@ public class PollObj {
 	static int POLL_FLAG_ADDRESS = 98;
 	private String portName;
 	RegisterInterface reg = new RegisterInterface();
-	private int[] acc = new int[LENGTH]; // array to store totals
+	private float[] acc = new float[LENGTH]; // array to store totals
 	private int[] tmp = new int[LENGTH]; // array to store most recently polled data
 	
 	public PollObj(String s) {
@@ -20,13 +20,20 @@ public class PollObj {
 	
 	public boolean newData() throws InterruptedException {
 		boolean drdy = false;
+		int poll_flag;
+		
 		if (!reg.connect(portName)) {
 			System.err.print("Failed to connect!");
 			System.exit(1);
 		}
 		try {
-			if(reg.read(POLL_FLAG_ADDRESS) == 1) drdy = true;
-			else drdy = false;
+			poll_flag = reg.read(POLL_FLAG_ADDRESS);
+			if(poll_flag != 0) {
+				drdy = true;
+			}
+			else {
+				drdy = false;
+			}
 		}
 		catch (SerialPortException e) {e.printStackTrace();}
 		catch (SerialPortTimeoutException e) {e.printStackTrace();}
@@ -37,7 +44,7 @@ public class PollObj {
 		return drdy;
 	}
 	
-	public void readNewData() throws InterruptedException {
+	public int[] readNewData() throws InterruptedException {
 		if (!reg.connect(portName)) {
 			System.err.print("Failed to connect!");
 			System.exit(1);
@@ -49,13 +56,14 @@ public class PollObj {
 			try {reg.disconnect();}
 			catch (SerialPortException e) {e.printStackTrace();}
 		}
+		return tmp;
 	}
 	
 	public void addNewData() {
 		for(int i = 0; i < LENGTH; i++) acc[i] += tmp[i];
 	}
 	
-	public int[] returnTotals() {
+	public float[] returnTotals() {
 		return acc;
 	}
 	
