@@ -1,3 +1,6 @@
+// Provided by Embedded Micro as-is (www.embeddedmicro.com)
+// requires java simple serial connector (jssc)
+
 package coincide_front_end_master;
 
 import java.util.Arrays;
@@ -13,7 +16,9 @@ public class RegisterInterface {
 	public RegisterInterface() {
 
 	}
-
+	
+    // A method for connecting to the Mojo on serial port "port"
+	
 	public boolean connect(String port) {
 		if (port == null)
 			return false;
@@ -43,6 +48,8 @@ public class RegisterInterface {
 		return true;
 	}
 
+	// A method for disconnecting from the serial port
+	
 	public boolean disconnect() throws SerialPortException {
 		return serialPort.closePort();
 	}
@@ -61,6 +68,10 @@ public class RegisterInterface {
 		return serialPort.writeBytes(buff);
 	}
 
+	// A public method for writing data to an address or addresses on the Mojo
+	// returns true on success, false on failure
+	// addresses can be written individually or sequentially
+	
 	public boolean write(int address, boolean increment, int[] data) throws SerialPortException {
 		for (int i = 0; i < data.length; i += 64) {
 			int length = Math.min(data.length - i, 64);
@@ -71,6 +82,8 @@ public class RegisterInterface {
 		}
 		return true;
 	}
+	
+	// A private method for writing data, called by write()
 
 	private boolean write64(int address, boolean increment, int[] data, int start, int length) throws SerialPortException {
 		byte[] buff = new byte[5 + length * 4];
@@ -90,6 +103,8 @@ public class RegisterInterface {
 
 		return serialPort.writeBytes(buff);
 	}
+	
+	// A public method for reading a single address, once.
 
 	public int read(int address) throws SerialPortException, SerialPortTimeoutException {
 		byte[] buff = new byte[5];
@@ -104,6 +119,8 @@ public class RegisterInterface {
 		return (buff[0] & 0xff) | (buff[1] & 0xff) << 8 | (buff[2] & 0xff) << 16 | (buff[3] & 0xff) << 24;
 	}
 
+	// A public method for batch reading - addresses can be read sequentially
+	
 	public void read(int address, boolean increment, int[] data) throws SerialPortException, SerialPortTimeoutException {
 		for (int i = 0; i < data.length; i += 64) {
 			int length = Math.min(data.length - i, 64);
@@ -112,6 +129,8 @@ public class RegisterInterface {
 				address += length;
 		}
 	}
+	
+	// A private method for batch reading, called by read()
 
 	private void read64(int address, boolean increment, int[] data, int start, int length) throws SerialPortException, SerialPortTimeoutException {
 		byte[] buff = new byte[5];
