@@ -7,13 +7,18 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import java.awt.Component;
+import java.awt.Insets;
+import javax.swing.JFormattedTextField;
+import javax.swing.JSeparator;
 
 public class NumWidget extends JPanel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField textField;
+	private JFormattedTextField txtlbl;
 	private JLabel labelA;
 	private JRadioButton radioButton;
 	private JLabel labelB;
@@ -27,58 +32,62 @@ public class NumWidget extends JPanel {
 	 * Create the panel.
 	 */
 	public NumWidget() {
+		setBorder(null);
 		state = 0;
 		radioButton = new JRadioButton("");
 		add(radioButton);
 		
 		labelA = new JLabel("A");
 		labelA.setForeground(Color.GREEN);
-		labelA.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelA.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelA.setEnabled(false);
 		add(labelA);
 		
 		labelB = new JLabel("B");
 		labelB.setForeground(Color.GREEN);
-		labelB.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelB.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelB.setEnabled(false);
 		add(labelB);
 		
 		labelC = new JLabel("C");
 		labelC.setForeground(Color.GREEN);
-		labelC.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelC.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelC.setEnabled(false);
 		add(labelC);
 		
 		labelD = new JLabel("D");
 		labelD.setForeground(Color.GREEN);
-		labelD.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelD.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelD.setEnabled(false);
 		add(labelD);
 		
 		labelP = new JLabel("P");
 		labelP.setForeground(Color.MAGENTA);
-		labelP.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelP.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelP.setEnabled(false);
 		add(labelP);
 		
 		JLabel labelF = new JLabel("F");
 		labelF.setForeground(Color.MAGENTA);
-		labelF.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelF.setFont(new Font("Tahoma", Font.BOLD, 20));
 		labelF.setEnabled(false);
 		add(labelF);
 		
 		labelS = new JLabel("S");
 		labelS.setForeground(Color.BLUE);
-		labelS.setFont(new Font("Tahoma", Font.BOLD, 24));
+		labelS.setFont(new Font("Tahoma", Font.BOLD, 20));
 		add(labelS);
 		
-		textField = new JTextField();
-		textField.setBackground(Color.WHITE);
-		textField.setEditable(false);
-		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		textField.setFont(new Font("Tahoma", Font.BOLD, 26));
-		textField.setColumns(8);
-		add(textField);
+		txtlbl = new JFormattedTextField();
+		txtlbl.setMargin(new Insets(2, 2, 6, 2));
+		add(txtlbl);
+		txtlbl.setBorder(null);
+		txtlbl.setAlignmentY(Component.TOP_ALIGNMENT);
+		txtlbl.setBackground(Color.WHITE);
+		txtlbl.setEditable(false);
+		txtlbl.setHorizontalAlignment(SwingConstants.CENTER);
+		txtlbl.setFont(new Font("Tahoma", Font.BOLD, 29));
+		txtlbl.setColumns(8);
 
 	}
 
@@ -122,16 +131,16 @@ public class NumWidget extends JPanel {
 		labelS.setText(text);
 	}
 	public boolean getTextFieldEditable() {
-		return textField.isEditable();
+		return txtlbl.isEditable();
 	}
 	public void setTextFieldEditable(boolean editable) {
-		textField.setEditable(editable);
+		txtlbl.setEditable(editable);
 	}
 	public String getTextFieldText() {
-		return textField.getText();
+		return txtlbl.getText();
 	}
 	public void setTextFieldText(String text_1) {
-		textField.setText(text_1);
+		txtlbl.setText(text_1);
 	}
 	public int getState() {
 		return state;

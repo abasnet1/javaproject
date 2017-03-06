@@ -26,6 +26,15 @@ import javax.swing.ButtonGroup;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import javax.swing.border.LineBorder;
+import javax.swing.border.BevelBorder;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.border.EtchedBorder;
 
 public class CoincideGUI {
 
@@ -73,17 +82,24 @@ public class CoincideGUI {
 		
 		JPanel buttonPanel = new JPanel();
 		data.add(buttonPanel, BorderLayout.SOUTH);
-		buttonPanel.setLayout(new GridLayout(1, 3, 0, 0));
+		buttonPanel.setLayout(new GridLayout(0, 4, 0, 0));
 		
-		JButton btnGO = new JButton("GO");
+		JToggleButton btnGO = new JToggleButton("GO");
+		btnGO.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(btnGO.isSelected()) {
+					btnGO.setText("STOP");
+					btnGO.setForeground(Color.RED);
+				}
+				else {
+					btnGO.setText("GO");
+					btnGO.setForeground(Color.GREEN);
+				}
+			}
+		});
 		btnGO.setForeground(Color.GREEN);
 		btnGO.setFont(new Font("Tahoma", Font.BOLD, 22));
 		buttonPanel.add(btnGO);
-		
-		JButton btnSTOP = new JButton("STOP");
-		btnSTOP.setForeground(Color.RED);
-		btnSTOP.setFont(new Font("Tahoma", Font.BOLD, 22));
-		buttonPanel.add(btnSTOP);
 		
 		JTextPane txtpnWindowWidth = new JTextPane();
 		txtpnWindowWidth.setBackground(UIManager.getColor("Button.background"));
@@ -91,25 +107,38 @@ public class CoincideGUI {
 		buttonPanel.add(txtpnWindowWidth);
 		
 		JPanel dataPanel = new JPanel();
+		dataPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		data.add(dataPanel, BorderLayout.CENTER);
-		dataPanel.setLayout(new GridLayout(5, 4, 0, 0));
+		dataPanel.setLayout(new GridLayout(5, 4, 1, 1));
 		
 		JButtonGroup radioBtnGrp = new JButtonGroup();
 		ArrayList<NumWidget> numwid = new ArrayList<NumWidget>(20);
-
+				
+				JPanel panel = new JPanel();
+				panel.setBorder(new LineBorder(new Color(0, 0, 0)));
+				dataPanel.add(panel);
+				panel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		NumWidget numWidget_0 = new NumWidget();
-		dataPanel.add(numWidget_0);
-		radioBtnGrp.add(numWidget_0.getRadioButton());
-		numwid.add(numWidget_0);			
-		numWidget_0.getRadioButton().setSelected(true);
+				
+				NumWidget numWidget_0 = new NumWidget();
+				panel.add(numWidget_0);
+				numWidget_0.setBorder(null);
+				radioBtnGrp.add(numWidget_0.getRadioButton());
+				numwid.add(numWidget_0);			
+				numWidget_0.getRadioButton().setSelected(true);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		dataPanel.add(panel_1);
+		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		NumWidget numWidget_1 = new NumWidget();
-		dataPanel.add(numWidget_1);
+		panel_1.add(numWidget_1);
 		radioBtnGrp.add(numWidget_1.getRadioButton());
 		numwid.add(numWidget_1);			
 		
 		NumWidget numWidget_2 = new NumWidget();
+		numWidget_2.setBorder(null);
 		dataPanel.add(numWidget_2);
 		radioBtnGrp.add(numWidget_2.getRadioButton());
 		numwid.add(numWidget_2);			

@@ -96,8 +96,8 @@ public class CoincideDriver {
 	// A method for setting integration interval
 	
 	private static void setInterval(Scanner sc, int[] up) {
-		String s0 = "Please enter the desired integration interval in halves of a second.";
-		System.out.println(s0); // query user for integration interval
+		String s0 = "Please enter the desired integration interval in halves of a second: ";
+		System.out.print(s0); // query user for integration interval
 		up[2] = Integer.parseInt(sc.nextLine()); // accept integration interval
 	}
 	
