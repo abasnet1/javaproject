@@ -125,7 +125,7 @@ public class JButtonGroup extends ButtonGroup
 		 */
 		public AbstractButton getButton(ButtonModel model)
 			{
-				Iterator it = buttons.iterator();
+				Iterator<AbstractButton> it = buttons.iterator();
 				while (it.hasNext())
 					{
 						AbstractButton ab = (AbstractButton)it.next();
@@ -157,10 +157,10 @@ public class JButtonGroup extends ButtonGroup
 		 *	Returns the buttons in the group as a <code>List</code>
 		 *	@return a <code>List</code> containing the buttons in the group, in the order they were added to the group
 		 */
-		public List getButtons()
-			{
-				return Collections.unmodifiableList(buttons);
-			}
+		//public List getButtons()
+		//	{
+		//		return Collections.unmodifiableList(buttons);
+		//	}
 		
 		/**
 		 *	Checks whether the group contains the given button
@@ -170,4 +170,6 @@ public class JButtonGroup extends ButtonGroup
 			{
 				return buttons.contains(button);
 			}
+		
+		
 	}

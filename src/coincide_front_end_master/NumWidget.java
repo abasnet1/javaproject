@@ -5,13 +5,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import java.awt.Component;
 import java.awt.Insets;
 import javax.swing.JFormattedTextField;
-import javax.swing.JSeparator;
 
 public class NumWidget extends JPanel {
 	/**
@@ -25,8 +22,9 @@ public class NumWidget extends JPanel {
 	private JLabel labelC;
 	private JLabel labelD;
 	private JLabel labelP;
-	private JLabel labelS;
+	private JLabel labelLS;
 	private int state;
+	private int accumulator;
 
 	/**
 	 * Create the panel.
@@ -73,10 +71,10 @@ public class NumWidget extends JPanel {
 		labelF.setEnabled(false);
 		add(labelF);
 		
-		labelS = new JLabel("S");
-		labelS.setForeground(Color.BLUE);
-		labelS.setFont(new Font("Tahoma", Font.BOLD, 20));
-		add(labelS);
+		labelLS = new JLabel("S");
+		labelLS.setForeground(Color.BLUE);
+		labelLS.setFont(new Font("Tahoma", Font.BOLD, 20));
+		add(labelLS);
 		
 		txtlbl = new JFormattedTextField();
 		txtlbl.setMargin(new Insets(2, 2, 6, 2));
@@ -124,11 +122,11 @@ public class NumWidget extends JPanel {
 	public void setLabelPEnabled(boolean enabled_4) {
 		labelP.setEnabled(enabled_4);
 	}
-	public String getLabelSText() {
-		return labelS.getText();
+	public String getLabelLSText() {
+		return labelLS.getText();
 	}
-	public void setLabelSText(String text) {
-		labelS.setText(text);
+	public void setLabelLSText(String text) {
+		labelLS.setText(text);
 	}
 	public boolean getTextFieldEditable() {
 		return txtlbl.isEditable();
@@ -147,5 +145,11 @@ public class NumWidget extends JPanel {
 	}
 	public void setState(int n) {
 		state = n;
+	}
+	public int getAcc() {
+		return accumulator;
+	}
+	public void setAcc(int accumulator) {
+		this.accumulator = accumulator;
 	}
 }

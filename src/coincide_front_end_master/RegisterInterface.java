@@ -17,6 +17,12 @@ public class RegisterInterface {
 
 	}
 	
+	// A method that returns true if the serial port is open, false if not
+	
+	public boolean isConnected() throws SerialPortException {
+		return serialPort.isOpened();
+	}
+	
     // A method for connecting to the Mojo on serial port "port"
 	
 	public boolean connect(String port) {
