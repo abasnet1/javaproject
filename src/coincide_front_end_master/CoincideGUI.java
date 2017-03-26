@@ -47,6 +47,7 @@ public class CoincideGUI {
 	private static final int[] translate = {0, 1, 4, 2, 5, 7, 10, 3, 6, 8, 11, 9, 12, 13, 14, 15, 16, 19, 17, 20, 22, 25, 18, 21, 23, 26, 24, 27, 28, 29}; // translation matrix for data array
 	private static final double clockPeriod = 6.67;
 	private JFrame frame;
+	private int intervalCounter; // MUST be global
 	
 	/**
 	 * Launch the application.
@@ -87,6 +88,8 @@ public class CoincideGUI {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 480);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setTitle("COINCIDE");
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -302,22 +305,26 @@ public class CoincideGUI {
 
 		pollTimer.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt) {
-				int k = 0;
 				// do the things
 				try {
 					if(r.read(POLL_FLAG_ADDRESS) != 0) {
-						k++;
+						r.write(POLL_FLAG_ADDRESS,0);
+						intervalCounter++;
 						for(int i = 0; i < MAX_WIDGETS; i++) {
 							NumWidget tmp = numwid.get(i);
 							if(tmp.getState() != 0) {
 								tmp.setAcc(tmp.getAcc() + r.read(translate[tmp.getState() - 1]));
-								if(k != 0 && k%requiredParams[2] == 0) {
+								if(intervalCounter%requiredParams[2] == 0) {
 									tmp.setTextFieldText(String.format("%,d", tmp.getAcc()));
 									tmp.setAcc(0);
 								}
 							}
 						}
-						if(requiredParams[3] != 0 && k == requiredParams[3]) pollTimer.stop();
+						if(intervalCounter == requiredParams[3]) pollTimer.stop();
+						btnGO.setText("GO");
+						btnGO.setForeground(Color.GREEN);
+						btnGO.setSelected(false);
+						
 					}
 				} catch (SerialPortException e) {
 					// TODO Auto-generated catch block
@@ -522,6 +529,7 @@ public class CoincideGUI {
 					else {
 						btnGO.setText("STOP");
 						btnGO.setForeground(Color.RED);
+						intervalCounter = 0;
 						try {
 							r.write(SHORT_WINDOW_ADDRESS, requiredParams[0]);
 							r.write(LONG_WINDOW_ADDRESS, requiredParams[1]);
