@@ -1,3 +1,11 @@
+/*
+ * 		Filename: 	CoincideGUI.java
+ * 		Author:		Stephen J. DeMonico
+ * 		Version:	0.3 Alpha
+ * 		
+ * 		This provides a touchscreen operable GUI for Coincide, the digital coincidence counter. See user manual for operation.
+ */
+
 package coincide_front_end_master;
 
 import java.awt.EventQueue;
@@ -45,24 +53,22 @@ import java.util.Date;
 
 public class CoincideGUI {
 	
-	//private static final double BIN_LENGTH = .5; // length, in seconds, of FPGA data bin
+	// CONSTANTS: none of these constants should be changed unless corresponding changes to FPGA are also made!!
 	private static final int POLL_FLAG_ADDRESS = 98; // FPGA address of polling flag
 	private static final int SHORT_WINDOW_ADDRESS = 99; // FPGA address of window one width
 	private static final int LONG_WINDOW_ADDRESS = 100; // FPGA address of window two width
 	private static final int POLL_DELAY = 50; // how often we check for new data, in ms
 	private static final int MAX_WIDGETS = 20; // the number of widgets on the data panel
 	private static final int[] translate = {0, 1, 4, 2, 5, 7, 10, 3, 6, 8, 11, 9, 12, 13, 14, 15, 16, 19, 17, 20, 22, 25, 18, 21, 23, 26, 24, 27, 28, 29}; // translation matrix for data array
-	private static final double clockPeriod = 6.67;
-	private JFrame frame;
-	private int intervalCounter; // MUST be global
-	private FileWriter write;
-	private PrintWriter printw;
+	private static final double clockPeriod = 6.67; // used to express window width in ns
 	
-	/**
-	 * Launch the application.
-	 */
+	private JFrame frame; // main frame
+	private int intervalCounter; // used for counting outside pollTimer, MUST be global
+	private FileWriter write; // used for text file output
+	private PrintWriter printw; // used for text file output
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() { // creates event handler thread
 			public void run() {
 				try {
 					CoincideGUI window = new CoincideGUI();
@@ -74,31 +80,26 @@ public class CoincideGUI {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 * @param reg 
-	 */
-	public CoincideGUI() {
+	public CoincideGUI() { // constructor
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 * @param r 
-	 */
-	private void initialize() {
-		//String workingDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		String workingDir = "";
-		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
-		Date date = new Date();
+
+	private void initialize() { // initialize frame contents
+		String workingDir = ""; // string used for text file output
+		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss"); // date format used for text file output
+		Date date = new Date(); // date used for text file output
 		int[] requiredParams = {2, 2, 1, 0}; // 0: first window 1: second window 2: integration interval 3: data points
-		UIManager.put("Label.disabledForeground",Color.DARK_GRAY);
-		RegisterInterface r = new RegisterInterface();
-		ButtonGroup radioBtnGrp = new ButtonGroup();
-		ArrayList<NumWidget> numwid = new ArrayList<NumWidget>(MAX_WIDGETS);
-		Timer pollTimer = new Timer(POLL_DELAY,null);
+		UIManager.put("Label.disabledForeground",Color.DARK_GRAY); // force disabled label color to avoid cross-platform differences
+		RegisterInterface r = new RegisterInterface(); // used for communication with FPGA
+		ButtonGroup radioBtnGrp = new ButtonGroup();  // used to make radio buttons exclusive
+		ArrayList<NumWidget> numwid = new ArrayList<NumWidget>(MAX_WIDGETS); // used to store references to widget instances
+		Timer pollTimer = new Timer(POLL_DELAY,null); // timer that drives polling behavior
+		
+		// next several hundred lines are GUI layout, color, etc
+		// consult Java/SWING documentation for details
 		frame = new JFrame();
-		frame.setBounds(100, 100, 800, 480);
+		frame.setBounds(100, 100, 800, 480); 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		frame.setTitle("COINCIDE");
@@ -218,16 +219,12 @@ public class CoincideGUI {
 		data.add(dataPanel, BorderLayout.CENTER);
 		dataPanel.setLayout(new GridLayout(5, 4, 1, 1));
 		
-		
+		// this loop creates and places all 20 widgets, and adds them to the widget array
 		for(int j = 0; j < 20; j++) {
-			
-				
 				JPanel panel = new JPanel();
 				panel.setBorder(new LineBorder(new Color(0, 0, 0)));
 				dataPanel.add(panel);
-				panel.setLayout(new GridLayout(0, 1, 0, 0));
-		
-				
+				panel.setLayout(new GridLayout(0, 1, 0, 0));				
 				NumWidget numWidget_0 = new NumWidget();
 				panel.add(numWidget_0);
 				numWidget_0.setBorder(null);
@@ -410,15 +407,15 @@ public class CoincideGUI {
 		
 				
 		
-		// Action Listeners
-		// TODO: move all action/change/event listeners down here
+		// Action/Event Listeners
 				
+		// all spinners (short/long windows, integration interval, # data points) detect if user changes value, store new value and update label text
+		// window width spinners also update FPGA and are only changeable when FPGA is connected
 		spinnerWindow1.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				try {
 					r.write(SHORT_WINDOW_ADDRESS, requiredParams[0]);
 				} catch (SerialPortException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				requiredParams[0] = (int) spinnerWindow1.getValue();
@@ -432,7 +429,6 @@ public class CoincideGUI {
 				try {
 					r.write(LONG_WINDOW_ADDRESS, requiredParams[1]);
 				} catch (SerialPortException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				requiredParams[1] = (int) spinnerWindow2.getValue();
@@ -454,9 +450,9 @@ public class CoincideGUI {
 				}
 		});
 		
+		// WRITE toggle button enables/disables write to disk, opens/closes file w/ user specified name, or date/time stamp if no name specified
 		tglbtnWrite.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: open/close file, make public bool ref'd by pollTimer, make timer write to file if true
 				if(tglbtnWrite.isSelected()) {
 					tglbtnWrite.setText("DON'T WRITE");
 					tglbtnWrite.setForeground(Color.RED);
@@ -465,14 +461,12 @@ public class CoincideGUI {
 						try {
 							write = new FileWriter(workingDir + df.format(date));
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					else
 						try {
 							write = new FileWriter(workingDir + outputFilenameTextField.getText());
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					printw = new PrintWriter(write);
@@ -485,13 +479,12 @@ public class CoincideGUI {
 						write.close();
 						printw.close();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 			}
 		});
-		
+		// CONNECT toggle button enables/disables serial connection, enables window width spinners, pushes spinner values to FPGA
 		tglbtnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(tglbtnConnect.isSelected()) {
@@ -508,7 +501,6 @@ public class CoincideGUI {
 							r.write(SHORT_WINDOW_ADDRESS, requiredParams[0]);
 							r.write(LONG_WINDOW_ADDRESS, requiredParams[1]);
 						} catch (SerialPortException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
@@ -523,43 +515,41 @@ public class CoincideGUI {
 				}
 			}
 		});
-		
+		// timer that drives polling
 		pollTimer.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent evt) {
-				// do the things
 				try {
-					if(r.read(POLL_FLAG_ADDRESS) != 0) {
-						r.write(POLL_FLAG_ADDRESS,0);
-						intervalCounter++;
-						for(int i = 0; i < MAX_WIDGETS; i++) {
+					if(r.read(POLL_FLAG_ADDRESS) != 0) { // if the data ready flag is up
+						r.write(POLL_FLAG_ADDRESS,0); // put it back down
+						intervalCounter++; // increment interval counter (gets reset by GO/STOP toggle)
+						for(int i = 0; i < MAX_WIDGETS; i++) { // loop through all widgets
 							NumWidget tmp = numwid.get(i);
-							if(tmp.getState() != 0) {
-								tmp.setAcc(tmp.getAcc() + r.read(translate[tmp.getState() - 1]));
-								if(tglbtnWrite.isSelected()) printw.printf(tmp.getAcc()+",");
-								if(intervalCounter%requiredParams[2] == 0) {
-									tmp.setTextFieldText(String.format("%,d", tmp.getAcc()));
-									tmp.setAcc(0);
+							if(tmp.getState() != 0) { // check if widget is configured for a channel
+								tmp.setAcc(tmp.getAcc() + r.read(translate[tmp.getState() - 1])); // if it is, poll the respective register
+								if(tglbtnWrite.isSelected()) printw.printf(tmp.getAcc()+","); // if write enabled, write to disk
+								if(intervalCounter%requiredParams[2] == 0) { // check if we have reached integration interval
+									tmp.setTextFieldText(String.format("%,d", tmp.getAcc())); // if so, update display
+									tmp.setAcc(0); // reset accumulator
 								}
 							}
+							// if this widget holds a user parameter and write is enabled, write parameter to file
 							if(tmp.getLabelPEnabled() && tglbtnWrite.isSelected()) printw.printf(tmp.getTextFieldText()+",");
 						}
-						if(tglbtnWrite.isSelected()) printw.printf(";\n");
-						if(intervalCounter == requiredParams[3]) pollTimer.stop();
+						if(tglbtnWrite.isSelected()) printw.printf("\n\r"); // if write enabled, end line/carriage return
+						if(intervalCounter == requiredParams[3]) pollTimer.stop(); // if we are at max data points, stop (always fails if data points > 0)
+						// reset GO button to stopped state
 						btnGO.setText("GO");
 						btnGO.setForeground(Color.GREEN);
 						btnGO.setSelected(false);
-						
 					}
 				} catch (SerialPortException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SerialPortTimeoutException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		});
-
+		// enable/disable channel A on selected widget (bit 0 of widget state)
 		btnA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -579,7 +569,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-
+		// enable/disable channel B on selected widget (bit 1 of widget state)
 		btnB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -599,7 +589,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-
+		// enable/disable channel C on selected widget (bit 2 of widget state)
 		btnC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -619,7 +609,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-
+		// enable/disable channel D on selected widget (bit 3 of widget state)
 		btnD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -639,7 +629,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-
+		// enable/disable widget for user parameter use
 		btnP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -661,7 +651,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-
+		// toggle widget between short and long windows (state offset by 15)
 		btnLS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -679,7 +669,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-		
+		// GO toggle button checks status of serial connection, starts/stops polling
 		btnGO.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(btnGO.isSelected()) {

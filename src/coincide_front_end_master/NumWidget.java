@@ -1,3 +1,5 @@
+// A custom object for use with CoincideGUI, stores widget-specific state, widget accumulator, get/set methods for all labels
+
 package coincide_front_end_master;
 
 import javax.swing.JPanel;
@@ -11,25 +13,21 @@ import java.awt.Insets;
 import javax.swing.JFormattedTextField;
 
 public class NumWidget extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private JFormattedTextField txtlbl;
-	private JLabel labelA;
-	private JRadioButton radioButton;
-	private JLabel labelB;
-	private JLabel labelC;
-	private JLabel labelD;
-	private JLabel labelP;
-	private JLabel labelLS;
-	private int state;
-	private int accumulator;
 
-	/**
-	 * Create the panel.
-	 */
+	private static final long serialVersionUID = 1L; // required by java simple serial
+	private JFormattedTextField txtlbl; // text field for numeric display
+	private JRadioButton radioButton; // radio button selector for widget
+	private JLabel labelA; // channel A indicator
+	private JLabel labelB; // channel B indicator
+	private JLabel labelC; // channel C indicator
+	private JLabel labelD; // channel D indicator
+	private JLabel labelP; // Free Parameter mode indicator
+	private JLabel labelLS; // short/long window indicator
+	private int state; // channel selector state 
+	private int accumulator; // stores data total for this widget
+
 	public NumWidget() {
+		// layout, color, etc. Consult Java/SWING documentation for details
 		setBorder(null);
 		state = 0;
 		radioButton = new JRadioButton("");
@@ -88,7 +86,8 @@ public class NumWidget extends JPanel {
 		txtlbl.setColumns(8);
 
 	}
-
+// get/set methods for all labels, fields, etc
+	
 	public boolean getLabelAEnabled() {
 		return labelA.isEnabled();
 	}
