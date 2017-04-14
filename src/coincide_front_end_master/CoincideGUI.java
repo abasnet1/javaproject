@@ -27,6 +27,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JToggleButton;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.border.LineBorder;
@@ -104,6 +106,7 @@ public class CoincideGUI {
 		frame.setResizable(false);
 		frame.setTitle("COINCIDE");
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane);
@@ -230,6 +233,19 @@ public class CoincideGUI {
 				numWidget_0.setBorder(null);
 				radioBtnGrp.add(numWidget_0.getRadioButton());
 				numWidget_0.setState(0);
+				numWidget_0.addMouseListener(new MouseListener(){
+					public void mouseClicked(MouseEvent e) {
+						numWidget_0.getRadioButton().setSelected(true);
+					}
+					public void mousePressed(MouseEvent e) {
+				    }
+				    public void mouseReleased(MouseEvent e) {
+				    }
+				    public void mouseEntered(MouseEvent e) {
+				    }
+				    public void mouseExited(MouseEvent e) {
+				    }
+				});
 				numwid.add(numWidget_0);
 		}
 		numwid.get(0).getRadioButton().setSelected(true);
