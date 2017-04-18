@@ -107,7 +107,7 @@ public class CoincideGUI {
 		frame.setTitle("COINCIDE");
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
-		
+		frame.setLocation(0,-20);
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane);
 		
@@ -542,9 +542,9 @@ public class CoincideGUI {
 							NumWidget tmp = numwid.get(i);
 							if(tmp.getState() != 0) { // check if widget is configured for a channel
 								tmp.setAcc(tmp.getAcc() + r.read(translate[tmp.getState() - 1])); // if it is, poll the respective register
-								if(tglbtnWrite.isSelected()) printw.printf(tmp.getAcc()+","); // if write enabled, write to disk
-								if(intervalCounter%requiredParams[2] == 0) { // check if we have reached integration interval
+								if(intervalCounter%requiredParams[2] == 0) { // check if we have reached integration interval									
 									tmp.setTextFieldText(String.format("%,d", tmp.getAcc())); // if so, update display
+									if(tglbtnWrite.isSelected()) printw.printf(tmp.getAcc()+","); // if write enabled, write to disk
 									tmp.setAcc(0); // reset accumulator
 								}
 							}
@@ -552,11 +552,13 @@ public class CoincideGUI {
 							if(tmp.getLabelPEnabled() && tglbtnWrite.isSelected()) printw.printf(tmp.getTextFieldText()+",");
 						}
 						if(tglbtnWrite.isSelected()) printw.printf("\n\r"); // if write enabled, end line/carriage return
-						if(intervalCounter == requiredParams[3]) pollTimer.stop(); // if we are at max data points, stop (always fails if data points > 0)
+						if(intervalCounter == requiredParams[3]) {
+							pollTimer.stop(); // if we are at max data points, stop (always fails if data points > 0)
 						// reset GO button to stopped state
-						btnGO.setText("GO");
-						btnGO.setForeground(Color.GREEN);
-						btnGO.setSelected(false);
+							btnGO.setText("GO");
+							btnGO.setForeground(Color.GREEN);
+							btnGO.setSelected(false);
+						}
 					}
 				} catch (SerialPortException e) {
 					e.printStackTrace();
