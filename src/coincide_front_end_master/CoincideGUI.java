@@ -56,6 +56,7 @@ import java.util.Date;
 public class CoincideGUI {
 	
 	// CONSTANTS: none of these constants should be changed unless corresponding changes to FPGA are also made!!
+	private static final double FPGA_DRDY_PERIOD = .5; // in sec, how often the FPGA will present fresh data
 	private static final int POLL_FLAG_ADDRESS = 98; // FPGA address of polling flag
 	private static final int SHORT_WINDOW_ADDRESS = 99; // FPGA address of window one width
 	private static final int LONG_WINDOW_ADDRESS = 100; // FPGA address of window two width
@@ -107,7 +108,7 @@ public class CoincideGUI {
 		frame.setTitle("COINCIDE");
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
-		frame.setLocation(0,-20);
+		frame.setLocation(0,-20); //attempts to force coincide window to top of RPi display (unresolved)
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.getContentPane().add(tabbedPane);
 		
@@ -136,7 +137,8 @@ public class CoincideGUI {
 		JTextPane txtpnWindowWidth = new JTextPane();
 		txtpnWindowWidth.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		txtpnWindowWidth.setBackground(UIManager.getColor("Button.background"));
-		txtpnWindowWidth.setText("Short: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nLong: " + (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]);
+		txtpnWindowWidth.setText("Short: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nLong: "
+				+ (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]*FPGA_DRDY_PERIOD+"s");
 		GridBagConstraints gbc_txtpnWindowWidth = new GridBagConstraints();
 		gbc_txtpnWindowWidth.fill = GridBagConstraints.BOTH;
 		gbc_txtpnWindowWidth.gridx = 1;
@@ -251,7 +253,7 @@ public class CoincideGUI {
 		numwid.get(0).getRadioButton().setSelected(true);
 		
 		JPanel parameters = new JPanel();
-		tabbedPane.addTab("Parameters", null, parameters, null);
+		tabbedPane.addTab("Settings", null, parameters, null);
 		GridBagLayout gbl_parameters = new GridBagLayout();
 		gbl_parameters.columnWidths = new int[] {500, 140, 140, 0};
 		gbl_parameters.rowHeights = new int[] {50, 50, 50, 50, 50, 50, 50, 0};
@@ -336,6 +338,14 @@ public class CoincideGUI {
 		gbc_spinnerIntegrationInterval.gridx = 2;
 		gbc_spinnerIntegrationInterval.gridy = 2;
 		parameters.add(spinnerIntegrationInterval, gbc_spinnerIntegrationInterval);
+		
+		JLabel lblIIsec = new JLabel(requiredParams[2]*FPGA_DRDY_PERIOD +"s");
+		lblIIsec.setFont(new Font("Tahoma", Font.PLAIN, 50));
+		GridBagConstraints gbc_lblIIsec = new GridBagConstraints();
+		gbc_lblIIsec.insets = new Insets(0, 0, 5, 5);
+		gbc_lblIIsec.gridx = 1;
+		gbc_lblIIsec.gridy = 2;
+		parameters.add(lblIIsec, gbc_lblIIsec);
 				
 		JLabel lblDataPoints = new JLabel("Data Points: (0 = infinite)");
 		lblDataPoints.setHorizontalAlignment(SwingConstants.CENTER);
@@ -436,7 +446,8 @@ public class CoincideGUI {
 				}
 				requiredParams[0] = (int) spinnerWindow1.getValue();
 				lblWindow1ns.setText((int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns");
-				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: " + (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]);
+				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: "
+						+ (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]*FPGA_DRDY_PERIOD+"s");
 			}
 		});
 
@@ -449,14 +460,17 @@ public class CoincideGUI {
 				}
 				requiredParams[1] = (int) spinnerWindow2.getValue();
 				lblWindow2ns.setText((int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns");
-				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: " + (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]);
+				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: "
+						+ (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]*FPGA_DRDY_PERIOD+"s");
 			}
 		});
 		
 		spinnerIntegrationInterval.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				requiredParams[2] = (int) spinnerIntegrationInterval.getValue();
-				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: " + (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]);
+				lblIIsec.setText(requiredParams[2]*FPGA_DRDY_PERIOD +"s");
+				txtpnWindowWidth.setText("Window 1: " + (int)(clockPeriod*(2 * requiredParams[0] - 1)) + "ns\r\nWindow 2: " 
+						+ (int)(clockPeriod*(2 * requiredParams[1] - 1)) + "ns\r\nInterval: " + requiredParams[2]*FPGA_DRDY_PERIOD+"s");
 			}
 		});
 		
