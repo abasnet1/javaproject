@@ -62,7 +62,7 @@ public class CoincideGUI {
 	private static final int LONG_WINDOW_ADDRESS = 100; // FPGA address of window two width
 	private static final int POLL_DELAY = 50; // how often we check for new data, in ms
 	private static final int MAX_WIDGETS = 20; // the number of widgets on the data panel
-	private static final int[] translate = {0, 1, 4, 2, 5, 7, 10, 3, 6, 8, 11, 9, 12, 13, 14, 15, 16, 19, 17, 20, 22, 25, 18, 21, 23, 26, 24, 27, 28, 29}; // translation matrix for data array
+	private static final int[] translate = {0, 1, 4, 2, 5, 7, 10, 3, 6, 8, 11, 9, 12, 13, 14, 15, 0, 16, 19, 17, 20, 22, 25, 18, 21, 23, 26, 24, 27, 28, 29}; // translation matrix for data array
 	private static final double clockPeriod = 6.67; // used to express window width in ns
 	
 	private JFrame frame; // main frame
@@ -554,7 +554,7 @@ public class CoincideGUI {
 						intervalCounter++; // increment interval counter (gets reset by GO/STOP toggle)
 						for(int i = 0; i < MAX_WIDGETS; i++) { // loop through all widgets
 							NumWidget tmp = numwid.get(i);
-							if(tmp.getState() != 0) { // check if widget is configured for a channel
+							if((tmp.getState() != 0) && (tmp.getState() != 16)) { // check if widget is configured for a channel
 								tmp.setAcc(tmp.getAcc() + r.read(translate[tmp.getState() - 1])); // if it is, poll the respective register
 								if(intervalCounter%requiredParams[2] == 0) { // check if we have reached integration interval									
 									tmp.setTextFieldText(String.format("%,d", tmp.getAcc())); // if so, update display
@@ -590,6 +590,7 @@ public class CoincideGUI {
 						if(tmp.getLabelAEnabled()) {
 							tmp.setLabelAEnabled(false);
 							tmp.setState(tmp.getState() - 1);
+							tmp.setTextFieldText("");
 						}
 						else {
 							tmp.setLabelAEnabled(true);
@@ -610,6 +611,7 @@ public class CoincideGUI {
 						if(tmp.getLabelBEnabled()) {
 							tmp.setLabelBEnabled(false);
 							tmp.setState(tmp.getState() - 2);
+							tmp.setTextFieldText("");
 						}
 						else {
 							tmp.setLabelBEnabled(true);
@@ -630,6 +632,7 @@ public class CoincideGUI {
 						if(tmp.getLabelCEnabled()) {
 							tmp.setLabelCEnabled(false);
 							tmp.setState(tmp.getState() - 4);
+							tmp.setTextFieldText("");
 						}
 						else {
 							tmp.setLabelCEnabled(true);
@@ -650,6 +653,7 @@ public class CoincideGUI {
 						if(tmp.getLabelDEnabled()) {
 							tmp.setLabelDEnabled(false);
 							tmp.setState(tmp.getState() - 8);
+							tmp.setTextFieldText("");
 						}
 						else { 
 							tmp.setLabelDEnabled(true);
@@ -683,7 +687,7 @@ public class CoincideGUI {
 				}
 			}
 		});
-		// toggle widget between short and long windows (state offset by 15)
+		// toggle widget between short and long windows (state offset by 16)
 		btnLS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i = 0; i < numwid.size(); i++) {
@@ -691,11 +695,12 @@ public class CoincideGUI {
 					if(tmp.getRadioButton().isSelected()) {
 						if(tmp.getLabelLSText() == "L") {
 							tmp.setLabelLSText("S");
-							tmp.setState(tmp.getState() - 15);
+							tmp.setState(tmp.getState() - 16);
+							tmp.setTextFieldText("");
 						}
 						else {
 							tmp.setLabelLSText("L");
-							tmp.setState(tmp.getState() + 15);
+							tmp.setState(tmp.getState() + 16);
 						}
 					}
 				}
