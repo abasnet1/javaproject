@@ -552,6 +552,7 @@ public class CoincideGUI {
 					if(r.read(POLL_FLAG_ADDRESS) != 0) { // if the data ready flag is up
 						r.write(POLL_FLAG_ADDRESS,0); // put it back down
 						intervalCounter++; // increment interval counter (gets reset by GO/STOP toggle)
+						if(tglbtnWrite.isSelected()) printw.printf(df.format(date) + ":" + "\n\r");
 						for(int i = 0; i < MAX_WIDGETS; i++) { // loop through all widgets
 							NumWidget tmp = numwid.get(i);
 							if((tmp.getState() != 0) && (tmp.getState() != 16)) { // check if widget is configured for a channel
