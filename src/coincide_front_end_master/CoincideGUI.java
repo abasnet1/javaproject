@@ -92,6 +92,8 @@ public class CoincideGUI {
 		String workingDir = ""; // string used for text file output
 		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss"); // date format used for text file output
 		Date date = new Date(); // date used for text file output
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
 		int[] requiredParams = {2, 2, 1, 0}; // 0: first window 1: second window 2: integration interval 3: data points
 		UIManager.put("Label.disabledForeground",Color.DARK_GRAY); // force disabled label color to avoid cross-platform differences
 		RegisterInterface r = new RegisterInterface(); // used for communication with FPGA
@@ -552,7 +554,7 @@ public class CoincideGUI {
 					if(r.read(POLL_FLAG_ADDRESS) != 0) { // if the data ready flag is up
 						r.write(POLL_FLAG_ADDRESS,0); // put it back down
 						intervalCounter++; // increment interval counter (gets reset by GO/STOP toggle)
-						if(tglbtnWrite.isSelected()) printw.printf(df.format(date) + ":" + "\n\r");
+						if(tglbtnWrite.isSelected()) printw.printf(dtf.format(now) + ":");
 						for(int i = 0; i < MAX_WIDGETS; i++) { // loop through all widgets
 							NumWidget tmp = numwid.get(i);
 							if((tmp.getState() != 0) && (tmp.getState() != 16)) { // check if widget is configured for a channel
